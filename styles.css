@@ -281,6 +281,15 @@ a {
   margin: 0 auto;
 }
 
+.anchor-target {
+  position: relative;
+  top: -96px;
+  display: block;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
 .hero {
   position: relative;
   width: 100%;

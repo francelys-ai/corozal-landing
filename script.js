@@ -227,7 +227,7 @@ drawerBackdrop.addEventListener("click", closeCartDrawer);
 
 continueShopping.addEventListener("click", () => {
   closeCartDrawer();
-  document.querySelector("#productos")?.scrollIntoView({ behavior: "smooth" });
+  document.querySelector("#menu")?.scrollIntoView({ behavior: "smooth" });
 });
 
 clearCart.addEventListener("click", () => {
