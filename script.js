@@ -1,4 +1,5 @@
-const whatsappBase = "https://wa.me/18132149276";
+const whatsappPhone = "18132149276";
+const whatsappBase = `https://wa.me/${whatsappPhone}`;
 
 const products = [
   {
@@ -186,19 +187,17 @@ function showAlert(message) {
 }
 
 function buildWhatsappMessage() {
-  const lines = ["Hola, quiero hacer un pedido en Corozal:", ""];
+  const total = "00.00";
+  const lines = ["Hola COROZAL, quiero hacer este pedido:", ""];
 
-  cart.forEach((item, index) => {
-    lines.push(`${index + 1}. ${item.name}`);
-    lines.push(`Presentación: ${item.presentation}`);
-    lines.push(`Cantidad: ${item.quantity}`);
-    lines.push(`Grass-Fed: ${item.grassFed}`);
-    lines.push("");
+  cart.forEach((item) => {
+    lines.push(`- ${item.quantity} x ${item.name} - ${item.presentation}`);
   });
 
-  lines.push("Delivery: Miami-Dade");
   lines.push("");
-  lines.push("Quedo atento para confirmar disponibilidad, precio final y horario de entrega.");
+  lines.push(`Total estimado: $${total}`);
+  lines.push("");
+  lines.push("Por favor confírmenme disponibilidad, precio final y delivery.");
 
   return lines.join("\n");
 }
@@ -238,11 +237,11 @@ clearCart.addEventListener("click", () => {
 
 sendCart.addEventListener("click", () => {
   if (!cart.length) {
-    showAlert("Agrega al menos un producto antes de enviar tu pedido.");
+    showAlert("Agrega al menos un producto al pedido antes de enviarlo por WhatsApp.");
     openCart();
     return;
   }
 
-  const message = encodeURIComponent(buildWhatsappMessage());
-  window.open(`${whatsappBase}?text=${message}`, "_blank", "noopener,noreferrer");
+  const url = `${whatsappBase}?text=${encodeURIComponent(buildWhatsappMessage())}`;
+  window.open(url, "_blank", "noopener,noreferrer");
 });
