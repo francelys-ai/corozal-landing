@@ -58,6 +58,7 @@ const cartList = document.querySelector("#cartList");
 const cartEmpty = document.querySelector("#cartEmpty");
 const cartCount = document.querySelector("#cartCount");
 const cartAlert = document.querySelector("#cartAlert");
+const continueShopping = document.querySelector("#continueShopping");
 const clearCart = document.querySelector("#clearCart");
 const sendCart = document.querySelector("#sendCart");
 
@@ -223,6 +224,11 @@ document.querySelectorAll(".site-nav a").forEach((link) => {
 orderFloat.addEventListener("click", openCart);
 closeCart.addEventListener("click", closeCartDrawer);
 drawerBackdrop.addEventListener("click", closeCartDrawer);
+
+continueShopping.addEventListener("click", () => {
+  closeCartDrawer();
+  document.querySelector("#productos")?.scrollIntoView({ behavior: "smooth" });
+});
 
 clearCart.addEventListener("click", () => {
   if (!cart.length) {
