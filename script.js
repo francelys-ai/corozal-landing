@@ -57,8 +57,37 @@ const styleOptions = [
   "Con salsa premium recomendada",
 ];
 
+const premiumSauces = [
+  {
+    name: "Reducción de vino tinto y especias",
+    description: "Profunda, elegante y aromática. Ideal para cortes de res.",
+    tone: "wine",
+  },
+  {
+    name: "Mantequilla de ajo rostizado y hierbas",
+    description: "Cremosa, brillante y suave. Perfecta para realzar la jugosidad.",
+    tone: "butter",
+  },
+  {
+    name: "Chimichurri premium",
+    description: "Fresco, herbal y balanceado. Ideal para picanha y cortes a la parrilla.",
+    tone: "herb",
+  },
+  {
+    name: "BBQ bourbon ahumada",
+    description: "Intensa, dulce y ahumada. Perfecta para cerdo y costillas.",
+    tone: "bbq",
+  },
+  {
+    name: "Teriyaki ahumada con miel y jengibre",
+    description: "Dulce-salada, brillante y moderna. Ideal para cerdo.",
+    tone: "teriyaki",
+  },
+];
+
 const cart = [];
 const productGrid = document.querySelector("#productGrid");
+const sauceGrid = document.querySelector("#sauceGrid");
 const header = document.querySelector(".site-header");
 const menuToggle = document.querySelector(".menu-toggle");
 const orderDrawer = document.querySelector("#orderDrawer");
@@ -148,6 +177,7 @@ function createProductCard(product, index) {
 
     cart.push({
       id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
+      type: "cut",
       name: product.name,
       presentation,
       style,
@@ -164,6 +194,51 @@ function createProductCard(product, index) {
   return card;
 }
 
+function createSauceCard(sauce, index) {
+  const card = document.createElement("article");
+  card.className = "sauce-card";
+  card.dataset.tone = sauce.tone;
+
+  const qtyId = `sauce-qty-${index}`;
+
+  card.innerHTML = `
+    <div class="sauce-visual" aria-hidden="true">
+      <span></span>
+    </div>
+    <div class="sauce-body">
+      <div>
+        <h3>${sauce.name}</h3>
+        <p>${sauce.description}</p>
+      </div>
+      <p class="sauce-availability">Disponible como salsa adicional</p>
+      <div class="sauce-actions">
+        <label for="${qtyId}">
+          Cantidad
+          <input id="${qtyId}" type="number" min="1" value="1" inputmode="numeric" />
+        </label>
+        <button class="btn sauce-order" type="button">Agregar salsa</button>
+      </div>
+    </div>
+  `;
+
+  card.querySelector(".sauce-order").addEventListener("click", () => {
+    const quantity = Math.max(1, Number(card.querySelector(`#${qtyId}`).value) || 1);
+
+    cart.push({
+      id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
+      type: "sauce",
+      name: sauce.name,
+      quantity,
+    });
+
+    renderCart();
+    showAlert("Salsa agregada al pedido");
+    openCart();
+  });
+
+  return card;
+}
+
 function renderCart() {
   cartCount.textContent = String(cart.length);
   cartEmpty.hidden = cart.length > 0;
@@ -172,15 +247,24 @@ function renderCart() {
   cart.forEach((item, index) => {
     const row = document.createElement("article");
     row.className = "cart-item";
+    const detailMarkup =
+      item.type === "sauce"
+        ? `
+          <strong>${index + 1}. Salsa adicional</strong>
+          <span>${item.name}</span>
+          <span>Cantidad: ${item.quantity}</span>
+        `
+        : `
+          <strong>${index + 1}. ${item.name}</strong>
+          <span>Presentación: ${item.presentation}</span>
+          <span>Estilo: ${item.style}</span>
+          ${item.sauce ? `<span>Salsa: ${item.sauce}</span>` : ""}
+          <span>Cantidad: ${item.quantity}</span>
+          <span>Grass-Fed: ${item.grassFed}</span>
+        `;
+
     row.innerHTML = `
-      <div>
-        <strong>${index + 1}. ${item.name}</strong>
-        <span>Presentación: ${item.presentation}</span>
-        <span>Estilo: ${item.style}</span>
-        ${item.sauce ? `<span>Salsa: ${item.sauce}</span>` : ""}
-        <span>Cantidad: ${item.quantity}</span>
-        <span>Grass-Fed: ${item.grassFed}</span>
-      </div>
+      <div>${detailMarkup}</div>
       <button type="button" class="cart-remove" aria-label="Eliminar ${item.name}">Eliminar</button>
     `;
 
@@ -222,11 +306,26 @@ function showAlert(message) {
 
 function buildWhatsappMessage() {
   const lines = ["Hola COROZAL, quiero hacer este pedido:", ""];
+  const cuts = cart.filter((item) => item.type !== "sauce");
+  const sauces = cart.filter((item) => item.type === "sauce");
 
-  cart.forEach((item) => {
+  lines.push("Cortes:");
+  if (!cuts.length) {
+    lines.push("- Sin cortes seleccionados");
+  }
+
+  cuts.forEach((item) => {
     const sauceText = item.sauce ? ` | Salsa: ${item.sauce}` : "";
     lines.push(`- ${item.quantity} x ${item.name} | ${item.presentation} | ${item.style}${sauceText} | Grass-Fed: ${item.grassFed}`);
   });
+
+  if (sauces.length) {
+    lines.push("");
+    lines.push("Salsas adicionales:");
+    sauces.forEach((item) => {
+      lines.push(`- ${item.quantity} x ${item.name}`);
+    });
+  }
 
   lines.push("");
   lines.push("Por favor confírmenme disponibilidad, precio final y delivery.");
@@ -236,6 +335,10 @@ function buildWhatsappMessage() {
 
 products.forEach((product, index) => {
   productGrid.appendChild(createProductCard(product, index));
+});
+
+premiumSauces.forEach((sauce, index) => {
+  sauceGrid.appendChild(createSauceCard(sauce, index));
 });
 
 renderCart();

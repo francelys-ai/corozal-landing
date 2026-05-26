@@ -650,6 +650,151 @@ h3 {
   gap: 18px;
 }
 
+.sauces-section {
+  margin-top: clamp(54px, 8vw, 92px);
+  padding-top: clamp(42px, 6vw, 70px);
+  border-top: 1px solid rgba(196, 154, 82, 0.18);
+}
+
+.sauce-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+}
+
+.sauce-card {
+  display: grid;
+  gap: 14px;
+  padding: 12px;
+  border: 1px solid rgba(196, 154, 82, 0.22);
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 30% 0%, rgba(196, 154, 82, 0.09), transparent 38%),
+    linear-gradient(180deg, #11100d, #090806);
+  box-shadow: 0 18px 54px rgba(0, 0, 0, 0.32);
+  transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
+}
+
+.sauce-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(196, 154, 82, 0.36);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4);
+}
+
+.sauce-visual {
+  position: relative;
+  display: grid;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  place-items: center;
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 44% 42%, rgba(255, 255, 255, 0.08), transparent 20%),
+    radial-gradient(circle at 50% 100%, rgba(196, 154, 82, 0.18), transparent 40%),
+    linear-gradient(135deg, rgba(31, 22, 16, 0.98), rgba(5, 4, 3, 0.98));
+}
+
+.sauce-visual::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to top, rgba(0, 0, 0, 0.62), transparent 58%),
+    radial-gradient(circle at 22% 20%, rgba(216, 154, 61, 0.14), transparent 28%);
+}
+
+.sauce-visual span {
+  position: relative;
+  width: 64px;
+  height: 48px;
+  border: 1px solid rgba(245, 232, 212, 0.14);
+  border-radius: 50% 50% 44% 44%;
+  background:
+    radial-gradient(ellipse at 50% 22%, rgba(255, 255, 255, 0.28), transparent 12%),
+    linear-gradient(180deg, var(--sauce-top, #7b1f1d), var(--sauce-bottom, #2a0807));
+  box-shadow:
+    0 14px 28px rgba(0, 0, 0, 0.4),
+    inset 0 6px 10px rgba(255, 255, 255, 0.08);
+}
+
+.sauce-visual span::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  top: -5px;
+  height: 16px;
+  border: 1px solid rgba(245, 232, 212, 0.22);
+  border-radius: 50%;
+  background: linear-gradient(180deg, rgba(245, 232, 212, 0.18), rgba(5, 4, 3, 0.2));
+}
+
+.sauce-card[data-tone="wine"] {
+  --sauce-top: #7b1f2f;
+  --sauce-bottom: #27070d;
+}
+
+.sauce-card[data-tone="butter"] {
+  --sauce-top: #d9a85b;
+  --sauce-bottom: #6f431b;
+}
+
+.sauce-card[data-tone="herb"] {
+  --sauce-top: #536c2f;
+  --sauce-bottom: #18210e;
+}
+
+.sauce-card[data-tone="bbq"] {
+  --sauce-top: #8a351c;
+  --sauce-bottom: #2b0d06;
+}
+
+.sauce-card[data-tone="teriyaki"] {
+  --sauce-top: #a84d25;
+  --sauce-bottom: #3a1308;
+}
+
+.sauce-body {
+  display: grid;
+  gap: 10px;
+}
+
+.sauce-body h3 {
+  margin-bottom: 7px;
+  color: var(--text);
+  font-family: var(--hero-serif);
+  font-size: 1.22rem;
+  line-height: 1.05;
+}
+
+.sauce-body p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+.sauce-availability {
+  color: #d0c0ac;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.sauce-actions {
+  display: grid;
+  grid-template-columns: 74px 1fr;
+  gap: 8px;
+  align-items: end;
+  margin-top: 2px;
+}
+
+.sauce-actions .btn {
+  width: 100%;
+  min-height: 44px;
+  padding-inline: 12px;
+  font-size: 0.8rem;
+}
+
 .product-card {
   display: grid;
   align-content: start;
@@ -1284,6 +1429,7 @@ input[type="number"] {
   .benefits-grid,
   .process-grid,
   .product-grid,
+  .sauce-grid,
   .order-steps,
   .contact-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -1319,6 +1465,7 @@ input[type="number"] {
   .benefits-grid,
   .process-grid,
   .product-grid,
+  .sauce-grid,
   .order-steps,
   .contact-grid {
     grid-template-columns: 1fr;
@@ -1477,7 +1624,43 @@ input[type="number"] {
     margin-top: 12px;
   }
 
+  .sauces-section {
+    margin-top: 48px;
+    padding-top: 42px;
+  }
+
+  .sauce-card {
+    grid-template-columns: 112px 1fr;
+    align-items: stretch;
+    gap: 12px;
+    padding: 10px;
+    border-radius: 18px;
+  }
+
+  .sauce-visual {
+    aspect-ratio: auto;
+    min-height: 100%;
+    border-radius: 14px;
+  }
+
+  .sauce-body h3 {
+    font-size: 1.12rem;
+  }
+
+  .sauce-body p {
+    font-size: 0.78rem;
+  }
+
+  .sauce-actions {
+    grid-template-columns: 68px 1fr;
+  }
+
+  .sauce-actions .btn {
+    min-height: 46px;
+  }
+
   .product-grid,
+  .sauce-grid,
   .benefits-grid,
   .process-grid,
   .order-steps {
