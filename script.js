@@ -6,44 +6,55 @@ const products = [
     name: "Tenderloin",
     description:
       "Corte fino, suave y elegante, ahumado lentamente para lograr una textura delicada y un sabor profundo.",
+    sauce: "Reducción de vino tinto y especias",
     image: "https://images.unsplash.com/photo-1600891964092-4316c288032e?auto=format&fit=crop&w=900&q=82",
   },
   {
     name: "Picanha",
     description:
       "Corte jugoso y lleno de carácter, reconocido por su sabor intenso y su equilibrio entre suavidad y grasa natural.",
+    sauce: "Chimichurri premium",
     image: "https://images.unsplash.com/photo-1558030006-450675393462?auto=format&fit=crop&w=900&q=82",
   },
   {
     name: "Roast Beef",
     description:
       "Preparación clásica de carne ahumada, ideal para disfrutar en platos fríos, calientes o combinaciones gourmet.",
+    sauce: "Mantequilla de ajo rostizado y hierbas",
     image: "https://images.unsplash.com/photo-1529694157872-4e0c0f3b238b?auto=format&fit=crop&w=900&q=82",
   },
   {
     name: "Ribeye",
     description:
       "Corte marmoleado, intenso y jugoso, ahumado en barril para resaltar su riqueza natural.",
+    sauce: "Mantequilla de ajo rostizado y hierbas o reducción de vino tinto",
     image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=900&q=82",
   },
   {
     name: "Cerdo",
     description:
       "Carne de cerdo ahumada lentamente, tierna, aromática y perfecta para comidas prácticas con sabor artesanal.",
+    sauce: "Teriyaki ahumada con miel y jengibre",
     image: "assets/corozal-hero-ribs.png",
   },
   {
     name: "Costillas de cerdo",
     description:
       "Costillas ahumadas en barril hasta lograr una textura jugosa, aroma profundo y sabor auténtico.",
+    sauce: "BBQ bourbon ahumada",
     image: "https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?auto=format&fit=crop&w=900&q=82",
   },
 ];
 
 const presentations = [
-  { label: "Individual 250g", message: "Individual 250g" },
-  { label: "Dúo 500g", message: "Dúo 500g" },
-  { label: "Familiar 1000g", message: "Familiar 1000g" },
+  { label: "Individual 250 g", message: "Individual 250 g" },
+  { label: "Dúo 500 g", message: "Dúo 500 g" },
+  { label: "Familiar 1000 g", message: "Familiar 1000 g" },
+];
+
+const styleOptions = [
+  "Plain / Natural",
+  "Con salsa premium recomendada",
 ];
 
 const cart = [];
@@ -70,8 +81,10 @@ function createProductCard(product, index) {
   card.style.setProperty("--image", `url("${product.image}")`);
 
   const selectId = `presentation-${index}`;
+  const styleId = `style-${index}`;
   const grassId = `grass-${index}`;
   const qtyId = `qty-${index}`;
+  const sauceId = `sauce-${index}`;
 
   card.innerHTML = `
     <div class="product-image" role="img" aria-label="${product.name} servido en estilo gourmet"></div>
@@ -98,22 +111,38 @@ function createProductCard(product, index) {
             <input id="${qtyId}" type="number" min="1" value="1" inputmode="numeric" />
           </label>
         </div>
+        <label class="field-full" for="${styleId}">
+          Estilo
+          <select id="${styleId}">
+            ${styleOptions.map((item) => `<option value="${item}">${item}</option>`).join("")}
+          </select>
+        </label>
+        <p class="style-copy">
+          Cada corte puede servirse Plain / Natural o acompañado con un potecito de salsa premium de la casa, seleccionada para realzar el sabor ahumado sin cubrir la esencia de la carne.
+        </p>
+        <p class="sauce-line" id="${sauceId}" hidden>
+          Incluye potecito de: <strong>${product.sauce}</strong>
+        </p>
         <label class="check-line" for="${grassId}">
           <input id="${grassId}" type="checkbox" />
           Grass-fed bajo pedido
         </label>
-        <div class="price-line">
-          <span>Precio</span>
-          <strong>$00.00 USD</strong>
-        </div>
-        <p class="product-note">Grass-Fed disponible bajo pedido y según disponibilidad.</p>
         <button class="btn product-order" type="button">Agregar al pedido</button>
       </div>
     </div>
   `;
 
+  const styleSelect = card.querySelector(`#${styleId}`);
+  const sauceLine = card.querySelector(`#${sauceId}`);
+
+  styleSelect.addEventListener("change", () => {
+    sauceLine.hidden = styleSelect.value !== "Con salsa premium recomendada";
+  });
+
   card.querySelector(".product-order").addEventListener("click", () => {
     const presentation = card.querySelector(`#${selectId}`).value;
+    const style = styleSelect.value;
+    const sauce = style === "Con salsa premium recomendada" ? product.sauce : "";
     const grassFed = card.querySelector(`#${grassId}`).checked ? "Sí" : "No";
     const quantity = Math.max(1, Number(card.querySelector(`#${qtyId}`).value) || 1);
 
@@ -121,6 +150,8 @@ function createProductCard(product, index) {
       id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
       name: product.name,
       presentation,
+      style,
+      sauce,
       quantity,
       grassFed,
     });
@@ -145,6 +176,8 @@ function renderCart() {
       <div>
         <strong>${index + 1}. ${item.name}</strong>
         <span>Presentación: ${item.presentation}</span>
+        <span>Estilo: ${item.style}</span>
+        ${item.sauce ? `<span>Salsa: ${item.sauce}</span>` : ""}
         <span>Cantidad: ${item.quantity}</span>
         <span>Grass-Fed: ${item.grassFed}</span>
       </div>
@@ -188,15 +221,13 @@ function showAlert(message) {
 }
 
 function buildWhatsappMessage() {
-  const total = "00.00";
   const lines = ["Hola COROZAL, quiero hacer este pedido:", ""];
 
   cart.forEach((item) => {
-    lines.push(`- ${item.quantity} x ${item.name} - ${item.presentation}`);
+    const sauceText = item.sauce ? ` | Salsa: ${item.sauce}` : "";
+    lines.push(`- ${item.quantity} x ${item.name} | ${item.presentation} | ${item.style}${sauceText} | Grass-Fed: ${item.grassFed}`);
   });
 
-  lines.push("");
-  lines.push(`Total estimado: $${total}`);
   lines.push("");
   lines.push("Por favor confírmenme disponibilidad, precio final y delivery.");
 
